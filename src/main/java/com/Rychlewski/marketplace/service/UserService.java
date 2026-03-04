@@ -5,6 +5,8 @@ import com.Rychlewski.marketplace.dto.request.UpdateUserRequest;
 import com.Rychlewski.marketplace.dto.response.UserResponse;
 import com.Rychlewski.marketplace.entity.User;
 import com.Rychlewski.marketplace.enums.RoleEnum;
+import com.Rychlewski.marketplace.exception.BusinessException;
+import com.Rychlewski.marketplace.exception.ResourceNotFoundException;
 import com.Rychlewski.marketplace.mapper.UserMapper;
 import com.Rychlewski.marketplace.repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -23,9 +25,9 @@ public class UserService {
 
     public UserResponse getUserById(Long id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User with id " + id + " not found"));
         if (!user.isActive()) {
-            throw new RuntimeException("User is not active");
+            throw new BusinessException("User is not active");
         }
         return UserMapper.toResponse(user);
     }
@@ -39,19 +41,19 @@ public class UserService {
 
     public UserResponse createUser(CreateUserRequest user) {
         if (userRepository.existsByEmail(user.getEmail())) {
-            throw new RuntimeException("Email already in use");
+            throw new BusinessException("Email already in use");
         }
         User newUser = UserMapper.toEntity(user);
         newUser.setRole(RoleEnum.ROLE_USER);
-        userRepository.save(newUser);
-        return UserMapper.toResponse(newUser);
+        User savedUser = userRepository.save(newUser);
+        return UserMapper.toResponse(savedUser);
     }
 
     public UserResponse updateUser(Long id, UpdateUserRequest request) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User with id " + id + " not found"));
         if (!user.isActive()) {
-            throw new RuntimeException("User is not active");
+            throw new BusinessException("User is not active");
         }
         if (request.getName() != null) {
             user.setName(request.getName());
@@ -59,20 +61,20 @@ public class UserService {
         if (request.getEmail() != null) {
             if (!request.getEmail().equals(user.getEmail())) {
                 if (userRepository.existsByEmail(request.getEmail())) {
-                    throw new RuntimeException("Email already in use");
+                    throw new BusinessException("Email already in use");
                 }
                 user.setEmail(request.getEmail());
             }
         }
-        userRepository.save(user);
-        return UserMapper.toResponse(user);
+        User updatedUser = userRepository.save(user);
+        return UserMapper.toResponse(updatedUser);
     }
 
     public void deleteUser(Long id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User with id " + id + " not found"));
         if (!user.isActive()) {
-            throw new RuntimeException("User already deactivated");
+            throw new BusinessException("User already deactivated");
         }
         user.setActive(false);
         userRepository.save(user);
