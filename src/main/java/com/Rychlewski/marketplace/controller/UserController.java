@@ -3,11 +3,11 @@ package com.Rychlewski.marketplace.controller;
 import com.Rychlewski.marketplace.dto.request.CreateUserRequest;
 import com.Rychlewski.marketplace.dto.request.UpdateUserRequest;
 import com.Rychlewski.marketplace.dto.response.UserResponse;
-import com.Rychlewski.marketplace.entity.User;
 import com.Rychlewski.marketplace.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -49,6 +49,12 @@ public class UserController {
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/admin-test")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String adminTest() {
+        return "Only admins can see this";
     }
 
 }

@@ -9,6 +9,7 @@ import com.Rychlewski.marketplace.exception.BusinessException;
 import com.Rychlewski.marketplace.exception.ResourceNotFoundException;
 import com.Rychlewski.marketplace.mapper.UserMapper;
 import com.Rychlewski.marketplace.repository.UserRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,9 +19,11 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public UserResponse getUserById(Long id) {
@@ -44,6 +47,7 @@ public class UserService {
             throw new BusinessException("Email already in use");
         }
         User newUser = UserMapper.toEntity(user);
+        newUser.setPassword(passwordEncoder.encode(user.getPassword()));
         newUser.setRole(RoleEnum.ROLE_USER);
         User savedUser = userRepository.save(newUser);
         return UserMapper.toResponse(savedUser);
