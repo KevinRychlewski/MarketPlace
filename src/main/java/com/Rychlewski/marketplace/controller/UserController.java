@@ -50,11 +50,4 @@ public class UserController {
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
     }
-
-    @GetMapping("/admin-test")
-    @PreAuthorize("hasRole('ADMIN')")
-    public String adminTest() {
-        return "Only admins can see this";
-    }
-
 }
