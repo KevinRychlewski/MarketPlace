@@ -6,32 +6,22 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "products")
-@AllArgsConstructor
-@NoArgsConstructor
+@Table(name = "categories")
 @Getter
 @Setter
-public class Product {
+@AllArgsConstructor
+@NoArgsConstructor
+public class Category {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 100)
+    @Column(nullable = false, unique = true, length = 100)
     private String name;
-
-    @Column(nullable = false, length = 500)
-    private String description;
-
-    @Column(nullable = false, precision = 10, scale = 2)
-    private BigDecimal price;
-
-    @Column(nullable = false)
-    private Integer stock;
 
     @Column(nullable = false)
     private boolean active;
@@ -41,7 +31,6 @@ public class Product {
 
     @Column(nullable = false)
     private LocalDateTime updatedAt;
-
 
     @PrePersist
     public void prePersist() {
@@ -55,7 +44,4 @@ public class Product {
         this.updatedAt = LocalDateTime.now();
     }
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id", nullable = false)
-    private Category category;
 }

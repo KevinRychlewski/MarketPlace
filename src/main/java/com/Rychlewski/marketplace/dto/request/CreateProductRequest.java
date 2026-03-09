@@ -26,4 +26,7 @@ public class CreateProductRequest {
     @PositiveOrZero(message = "O estoque do produto deve ser um valor maior ou igual a zero")
     private Integer stock;
 
+    @NotNull(message = "A categoria do produto é obrigatória")
+    private Long categoryId;
+
 }
