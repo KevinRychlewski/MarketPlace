@@ -8,17 +8,21 @@ import com.Rychlewski.marketplace.exception.BusinessException;
 import com.Rychlewski.marketplace.exception.ResourceNotFoundException;
 import com.Rychlewski.marketplace.mapper.CategoryMapper;
 import com.Rychlewski.marketplace.repository.CategoryRepository;
+import com.Rychlewski.marketplace.repository.ProductRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.IllegalFormatCodePointException;
 import java.util.List;
 
 @Service
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
+    private final ProductRepository productRepository;
 
-    public CategoryService(CategoryRepository categoryRepository) {
+    public CategoryService(CategoryRepository categoryRepository, ProductRepository productRepository) {
         this.categoryRepository = categoryRepository;
+        this.productRepository = productRepository;
     }
 
     public CategoryResponse createCategory(CreateCategoryRequest request) {
@@ -58,10 +62,20 @@ public class CategoryService {
             return CategoryMapper.toResponse(updatedCategory);
         }
 
+    public CategoryResponse setCategoryActiveStatus(Long id) {
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Category with id " + id + " not found"));
+        category.setActive(true);
+        Category updatedCategory = categoryRepository.save(category);
+        return CategoryMapper.toResponse(updatedCategory);
+    }
 
     public void deleteCategory(Long id) {
         Category category = categoryRepository.findByIdAndActiveTrue(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Category with id " + id + " not found"));
+        if (productRepository.existsByCategoryIdAndActiveTrue(id)) {
+            throw new BusinessException("Cannot delete category with active products");
+        }
         category.setActive(false);
         categoryRepository.save(category);
     }

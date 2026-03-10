@@ -17,5 +17,7 @@ public class ProductResponse {
     private Integer stock;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private Long categoryId;
+    private String categoryName;
 
 }

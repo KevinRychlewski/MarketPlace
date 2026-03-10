@@ -24,6 +24,8 @@ public class ProductMapper {
         response.setStock(product.getStock());
         response.setCreatedAt(product.getCreatedAt());
         response.setUpdatedAt(product.getUpdatedAt());
+        response.setCategoryId(product.getCategory().getId());
+        response.setCategoryName(product.getCategory().getName());
         return response;
     }
 
