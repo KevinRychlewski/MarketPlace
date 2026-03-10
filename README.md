@@ -244,7 +244,7 @@ GET /api/categories
 GET /api/categories/{id}  
 PATCH /api/categories/{id}  
 DELETE /api/categories/{id}  
-PATCH /api/categories/{id}/activate
+PATCH /api/categories/{id}/active
 
 ---
 
